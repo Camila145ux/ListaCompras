@@ -1,0 +1,15 @@
+.header{
+    height: 5rem;
+    width: 100%;
+    border: 1px solid black;
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+
+}
+
+.iconod{
+    height: 100%;
+    width: 5rem;
+    
+}
