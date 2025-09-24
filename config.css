@@ -9,3 +9,60 @@ html{
     font-family: monospace;
 }
 
+/* 📱 Teléfonos */
+@media (max-width: 600px) {
+  .formulario,
+  .seccion,
+  .header {
+    width: 100%;
+    padding: 10px;
+  }
+
+  .nombreI,
+  .precioI {
+    font-size: 16px;
+    padding: 10px;
+    margin-bottom: 10px;
+  }
+
+  .BotonAgregar {
+    width: 100%;
+    padding: 12px;
+    font-size: 16px;
+  }
+
+  .itemProducto {
+    font-size: 14px;
+    padding: 8px;
+    display: flex;
+    justify-content: space-between;
+  }
+
+  .TOTAL {
+    font-size: 24px;
+    text-align: center;
+  }
+
+  .btnDescargar {
+    width: 40px;
+    height: 40px;
+  }
+}
+
+/* 🧾 Tablets */
+@media (min-width: 601px) and (max-width: 900px) {
+  .formulario,
+  .seccion,
+  .header {
+    width: 90%;
+    padding: 15px;
+  }
+
+  .TOTAL {
+    font-size: 28px;
+  }
+
+  .BotonAgregar {
+    font-size: 18px;
+  }
+}

@@ -1,20 +1,20 @@
+import { descarga} from "../control/descarga.js";
+
 function header(){
     let header = document.createElement('div');
     header.className = "header";
 
-    let titulo1 = document.createElement('h1');
-    titulo1.innerText = "lista de compras";
-    header.appendChild(titulo1);
 
-    let icono = document.createElement('div');
-    icono.className = "iconod";
+    const imgDescargar = document.createElement("img");
+  imgDescargar.src = "assets/descarga.png"; 
+  imgDescargar.alt = "Descargar total";
+  imgDescargar.className = "btnDescargar";
+  imgDescargar.style.cursor = "pointer";
 
-    let img = document.createElement('img');
-    img.src = "./assets/descarga.png";
-    img.className = "iconod"
+  imgDescargar.addEventListener("click", descarga);
 
-    header.appendChild(icono);
-    icono.appendChild(img)
+
+    header.appendChild(imgDescargar);
 
     return header;
 }

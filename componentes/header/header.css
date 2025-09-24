@@ -1,14 +1,13 @@
 .header{
     height: 5rem;
     width: 100%;
-    border: 1px solid black;
     display: flex;
     justify-content: flex-end;
     align-items: center;
 
 }
 
-.iconod{
+.btnDescargar{
     height: 100%;
     width: 5rem;
     

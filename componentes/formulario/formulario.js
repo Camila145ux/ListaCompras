@@ -1,21 +1,18 @@
 import { obtenerProducto, guardarProducto } from "../control/miLocalStorage.js";
+import { seccion } from "../seccion/seccionComponent.js";
 
 function ComprasFormulario(){
     const ComprasF = document.createElement('section');
+    ComprasF.className = "formulario";
 
-    const total = document.createElement('h2');
-    total.className = "total-compras";
-    total.innerText = "Q. 00. 00";
 
-    const productoInput = document.createElement('div');
-    productoInput.className = "Input";
-
-    const nombreI = document.createElement('div');
-    nombreI.setAttribute("contenteditable", true);
+    const nombreI = document.createElement('input');
+    nombreI.placeholder = "Producto";
     nombreI.className = "nombreI";
+   
 
-    const precioI = document.createElement('div');
-    precioI.setAttribute("contenteditable", true);
+    const precioI = document.createElement('input');
+    precioI.placeholder = "Q 00.00";
     precioI.className = "precioI";
 
     const BotonAgregar = document.createElement('button');
@@ -23,39 +20,77 @@ function ComprasFormulario(){
     BotonAgregar.className = "BotonAgregar";
 
 
+    ComprasF.appendChild(nombreI);
+    ComprasF.appendChild(precioI);
+    ComprasF.appendChild(BotonAgregar);
 
-
-    ComprasF.appendChild(total);
-    productoInput.appendChild(nombreI);
-    productoInput.appendChild(precioI);
-    productoInput.appendChild(BotonAgregar);
-
-    ComprasF.appendChild(productoInput);
-
-//lista productos
     const listaProductos = document.createElement('div');
     listaProductos.className = "listaProductos";
     ComprasF.appendChild(listaProductos);
 
-    //agregar producto
-    BotonAgregar.addEventListener("click", () => {
-        const nombre = nombreI.innerText.trim();
-        const precio = parseFloat(precioI.innerText.trim());
 
-
-        const item = document.createElement('div');
-        item.innerText = `${nombre} - Q. ${precio.toFixed(2)}`;
-        listaProductos.appendChild(item);
-
+    //actualizar el total
+    function actualizarTotal() {
         const productos = obtenerProducto();
-        productos.push({nombre, precio});
+        const suma = productos.reduce((acc, p) => acc + p.precio, 0);
+        const totalH2 = document.getElementById("totalCompras");
+        if (totalH2) {
+            totalH2.innerText = "Q " + suma.toFixed(2);
+        }
+    }
+
+    // agregar producto
+    BotonAgregar.addEventListener("click", () => {
+        const nombre = nombreI.value.trim();
+        const precio = parseFloat(precioI.value.trim());
+
+        if (!nombre || isNaN(precio)) {
+            console.log("Datos inválidos");
+            return;
+        }
+
+
+        
+        const itemProducto = document.createElement("div");
+        itemProducto.className = "itemProducto";
+
+        const texto = document.createElement("span");
+        texto.innerText = `${nombre} - Q. ${precio.toFixed(2)}`;
+
+        //  botón eliminar
+        const botonEliminar = document.createElement("button");
+        botonEliminar.innerText = "✖"; 
+        botonEliminar.className = "btnEliminar";
+
+        // eliminar el producto
+        botonEliminar.addEventListener("click", () => {
+            itemProducto.remove();
+
+            // actualizar localStorage
+            let productos = obtenerProducto(); //trae todos los producto guardados
+            productos = productos.filter(p => !(p.nombre === nombre && p.precio === precio)); //suma todos los productos
+            guardarProducto(productos);       
+            actualizarTotal();
+        });
+
+
+        itemProducto.appendChild(texto);
+        itemProducto.appendChild(botonEliminar);
+        listaProductos.appendChild(itemProducto);
+
+        // guardar en localStorage
+        const productos = obtenerProducto();
+        productos.push({ nombre, precio });
         guardarProducto(productos);
 
-        console.log("Producto agregado: ", {nombre, precio});
+        actualizarTotal();
+
+        nombreI.value = "";
+        precioI.value = "";
     });
+    
 
     return ComprasF;
-
 }
 
-export{ComprasFormulario};
+export { ComprasFormulario };
