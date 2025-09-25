@@ -1,15 +1,21 @@
 import { obtenerProducto, guardarProducto } from "../control/miLocalStorage.js";
-import { seccion } from "../seccion/seccionComponent.js";
 
-function ComprasFormulario(){
+function ComprasFormulario(totalH2) {
     const ComprasF = document.createElement('section');
     ComprasF.className = "formulario";
 
+    let total = 0;
 
+    function actualizarTotalVisual() {
+        if (totalH2) {
+            totalH2.innerText = "Q " + total.toFixed(2);
+        }
+    }
+
+    // Inputs
     const nombreI = document.createElement('input');
     nombreI.placeholder = "Producto";
     nombreI.className = "nombreI";
-   
 
     const precioI = document.createElement('input');
     precioI.placeholder = "Q 00.00";
@@ -19,77 +25,119 @@ function ComprasFormulario(){
     BotonAgregar.innerText = "Agregar";
     BotonAgregar.className = "BotonAgregar";
 
+    // Contenedor para la captura (total + inputs + botón)
+    const capturaContainer = document.createElement("div");
+    capturaContainer.id = "capturaArea";
+    capturaContainer.style.padding = "10px";
+    capturaContainer.style.backgroundColor = "#ffffff";
+    capturaContainer.style.display = "inline-block";
 
-    ComprasF.appendChild(nombreI);
-    ComprasF.appendChild(precioI);
-    ComprasF.appendChild(BotonAgregar);
+    // Insertamos total al inicio del contenedor
+    if (totalH2) capturaContainer.appendChild(totalH2);
 
+    // Movemos inputs y botón al contenedor
+    capturaContainer.appendChild(nombreI);
+    capturaContainer.appendChild(precioI);
+    capturaContainer.appendChild(BotonAgregar);
+
+    // Agregamos contenedor al formulario
+    ComprasF.appendChild(capturaContainer);
+
+    // Lista de productos añadidos (no se incluirá en la captura)
     const listaProductos = document.createElement('div');
     listaProductos.className = "listaProductos";
     ComprasF.appendChild(listaProductos);
 
-
-    //actualizar el total
-    function actualizarTotal() {
-        const productos = obtenerProducto();
-        const suma = productos.reduce((acc, p) => acc + p.precio, 0);
-        const totalH2 = document.getElementById("totalCompras");
-        if (totalH2) {
-            totalH2.innerText = "Q " + suma.toFixed(2);
-        }
-    }
-
-    // agregar producto
+    // Función agregar producto
     BotonAgregar.addEventListener("click", () => {
         const nombre = nombreI.value.trim();
-        const precio = parseFloat(precioI.value.trim());
+        const precio = parseFloat(precioI.value.replace("Q", "").trim());
 
-        if (!nombre || isNaN(precio)) {
+        if (!nombre || isNaN(precio) || precio <= 0) {
             console.log("Datos inválidos");
             return;
         }
 
-
-        
         const itemProducto = document.createElement("div");
         itemProducto.className = "itemProducto";
 
         const texto = document.createElement("span");
         texto.innerText = `${nombre} - Q. ${precio.toFixed(2)}`;
 
-        //  botón eliminar
         const botonEliminar = document.createElement("button");
-        botonEliminar.innerText = "✖"; 
+        botonEliminar.innerText = "✖";
         botonEliminar.className = "btnEliminar";
 
-        // eliminar el producto
         botonEliminar.addEventListener("click", () => {
             itemProducto.remove();
+            total -= precio;
+            actualizarTotalVisual();
 
-            // actualizar localStorage
-            let productos = obtenerProducto(); //trae todos los producto guardados
-            productos = productos.filter(p => !(p.nombre === nombre && p.precio === precio)); //suma todos los productos
-            guardarProducto(productos);       
-            actualizarTotal();
+            let productos = obtenerProducto();
+            productos = productos.filter(p => !(p.nombre === nombre && p.precio === precio));
+            guardarProducto(productos);
+
+            if (productos.length === 0) {
+                localStorage.removeItem("carrito");
+                total = 0;
+                actualizarTotalVisual();
+            }
         });
-
 
         itemProducto.appendChild(texto);
         itemProducto.appendChild(botonEliminar);
         listaProductos.appendChild(itemProducto);
 
-        // guardar en localStorage
         const productos = obtenerProducto();
         productos.push({ nombre, precio });
         guardarProducto(productos);
 
-        actualizarTotal();
+        total += precio;
+        actualizarTotalVisual();
 
         nombreI.value = "";
         precioI.value = "";
     });
-    
 
+    // Cargar productos guardados
+    let productosGuardados = obtenerProducto();
+    productosGuardados.forEach(p => {
+        if (!p || !p.nombre || typeof p.precio !== "number") return;
+
+        const itemProducto = document.createElement("div");
+        itemProducto.className = "itemProducto";
+
+        const texto = document.createElement("span");
+        texto.innerText = `${p.nombre} - Q. ${p.precio.toFixed(2)}`;
+
+        const botonEliminar = document.createElement("button");
+        botonEliminar.innerText = "✖";
+        botonEliminar.className = "btnEliminar";
+
+        botonEliminar.addEventListener("click", () => {
+            itemProducto.remove();
+            total -= p.precio;
+            actualizarTotalVisual();
+
+            let productos = obtenerProducto() || [];
+            productos = productos.filter(prod => !(prod.nombre === p.nombre && prod.precio === p.precio));
+            guardarProducto(productos);
+
+            if (productos.length === 0) {
+                localStorage.removeItem("carrito");
+                total = 0;
+                actualizarTotalVisual();
+            }
+        });
+
+        itemProducto.appendChild(texto);
+        itemProducto.appendChild(botonEliminar);
+        listaProductos.appendChild(itemProducto);
+
+        total += p.precio;
+    });
+
+    actualizarTotalVisual();
     return ComprasF;
 }
 

@@ -1,27 +1,32 @@
 import { header } from "./componentes/header/header.js";
-import { obtenerProducto, guardarProducto } from "./componentes/control/miLocalStorage.js";
 import { seccion } from "./componentes/seccion/seccionComponent.js";
 import { ComprasFormulario } from "./componentes/formulario/formulario.js";
+import { obtenerProducto, guardarProducto } from "./componentes/control/miLocalStorage.js";
 
-function main(){
-    let main = document.createElement('section');
-    main.className = "main";
-    // local storage
+function app() {
+    let contenedor = document.createElement('section');
+    contenedor.className = "main";
+
+    // Asegurarse que localStorage tenga un array válido
     let productosGuardados = obtenerProducto();
-
     if (!productosGuardados || productosGuardados.length === 0) {
         productosGuardados = [];
         guardarProducto(productosGuardados);
     }
-    console.log("seleccion de productos  ", productosGuardados);
 
+    // Header
+    contenedor.appendChild(header());
 
-    main.appendChild(header());
-    main.appendChild(seccion());
-    main.appendChild(ComprasFormulario());
-    
+    // Sección de total
+    const seccionElement = seccion();
+    contenedor.appendChild(seccionElement);
 
-    return main;
+    // Formulario con referencia al total
+    const totalH2 = seccionElement.querySelector("#totalCompras");
+    contenedor.appendChild(ComprasFormulario(totalH2));
+
+    return contenedor;
 }
 
-document.body.appendChild(main());
+// Montar en el root
+document.getElementById("root").appendChild(app());

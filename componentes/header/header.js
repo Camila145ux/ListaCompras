@@ -1,22 +1,24 @@
-import { descarga} from "../control/descarga.js";
+import { descarga } from "../control/descarga.js";
 
-function header(){
-    let header = document.createElement('div');
+export function header() {
+    const header = document.createElement("header");
     header.className = "header";
 
 
-    const imgDescargar = document.createElement("img");
-  imgDescargar.src = "assets/descarga.png"; 
-  imgDescargar.alt = "Descargar total";
-  imgDescargar.className = "btnDescargar";
-  imgDescargar.style.cursor = "pointer";
+    // Imagen botón de descarga
+    const imgDescarga = document.createElement("img");
+    imgDescarga.src = "assets/descarga.png";
+    imgDescarga.alt = "Descargar";
+    imgDescarga.className = "Descarga";
+    imgDescarga.style.cursor = "pointer";
+    imgDescarga.style.width = "40px";
+    imgDescarga.style.height = "40px";
+    imgDescarga.style.marginLeft = "15px";
 
-  imgDescargar.addEventListener("click", descarga);
+    imgDescarga.addEventListener("click", () => {
+        descarga();
+    });
 
-
-    header.appendChild(imgDescargar);
-
+    header.appendChild(imgDescarga);
     return header;
 }
-
-export {header};
